@@ -1,7 +1,7 @@
 ﻿CREATE DATABASE DunkinDonuts;
 GO
 
-USE DunkinDonuts;
+USE Dunkin_Donuts;
 GO
 
 CREATE TABLE Customer(
@@ -9,7 +9,7 @@ CREATE TABLE Customer(
   FirstName varchar(50) NOT NULL,
   LastName varchar(50) NOT NULL,
   Email varchar(50) NOT NULL,
-  Address varchar(50) NOT NULL,
+  CustomerAddress varchar(50) NOT NULL,
   ZipCode bigint NOT NULL,
   CreditCardID bigint NOT NULL);
 
@@ -17,12 +17,12 @@ CREATE TABLE Customer(
 CREATE TABLE Store(
   StoreID bigint NOT NULL PRIMARY KEY,
   Name varchar(50) NOT NULL,
-  Type varchar(50) NOT NULL,
+  StoreType varchar(50) NOT NULL,
   Country varchar(50) NOT NULL,
   Region varchar(50) NOT NULL,
   City varchar(50) NOT NULL,
   ZipCode varchar(50) NOT NULL,
-  Address varchar(50) NOT NULL,
+  StoreAddress varchar(50) NOT NULL,
   Phone varchar(50) NOT NULL,
   YearEstablished bigint NOT NULL);
 
@@ -32,7 +32,7 @@ CREATE TABLE Employee(
   FirstName varchar(50) NOT NULL,
   LastName varchar(50) NOT NULL,
   StoreID bigint NOT NULL,
-  Address varchar(50) NOT NULL,
+  EmployeeAddress varchar(50) NOT NULL,
   IsStoreManager bit NOT NULL,
   Position bigint NOT NULL);
 
@@ -110,20 +110,57 @@ CREATE TABLE MenuItem(
   SeasonalID bigint NOT NULL,
   StoreID bigint NOT NULL); 
 
+  ALTER TABLE Employee ADD CONSTRAINT FK_Employee_Store
+FOREIGN KEY (StoreID) REFERENCES Store(StoreID);
+GO
 
+ALTER TABLE OrderHeader ADD CONSTRAINT FK_OrderHeader_Employee
+FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID);
+GO
 
-  INSERT INTO Customer(CustomerID, FirstName, LastName, Email, Address, ZipCode, CreditCardID) VALUES
-(1001, 'Jane', 'Harrington', 'bella321@aol.com', '949 Wellington Road', 33434, 255),
-(1002, 'Max', 'Bourne', 'maxbourne@gmail.com', '330 Atlantic Ave', 33455, 261),
-(1003, 'Marybelle', 'Williams', 'marybelle@williams.com', '5 Wilson Dr', 33435, 253),
-(1004, 'Jay', 'Mobilia', 'jmobilia561@gmail.com', '35 Duncan Dr', 33434, NULL),
-(1005, 'Gina', 'OConnell', 'goconnell@tmt.com', '210 Broken Sound Dr', 33430, 251),
-(1006, 'Gino', 'Ginopoulos', 'ginogino@gmail.com', '13 Mulholland Dr', 33434, 252),
-(1007, 'Andrew', 'Andrewson', 'aandrews@gmail.com', '213 Atlantic Ave', 33444, 254),
-(1008, 'Michelle', 'Vozzella', 'mvozz@gmail.com', '40 Arrieta Dr', 33434, 259),
-(1009, 'Sophie', 'Cluie', 'sophiecluie@tmt.com', '53 Duncan Dr', 33434, 260),
-(1010, 'Isabel', 'Santos', 'isantos@futuretechnologies.com', '93 Kellerman Rd', 33434, 256),
-(1011, 'Joseph', 'Adande', 'jayadande@gmail.com', '31 Durant Dr', 33434, 258);
+ALTER TABLE OrderHeader ADD CONSTRAINT FK_OrderHeader_Store
+FOREIGN KEY (StoreID) REFERENCES Store(StoreID);
+GO
+
+ALTER TABLE OrderHeader ADD CONSTRAINT FK_OrderHeader_CreditCard
+FOREIGN KEY (CreditCardID) REFERENCES CreditCard(CreditCardID);
+GO
+
+ALTER TABLE OrderDetail ADD CONSTRAINT FK_OrderDetail_Order
+FOREIGN KEY (OrderID) REFERENCES OrderDetail(OrderID);
+GO
+
+ALTER TABLE OrderDetail ADD CONSTRAINT FK_OrderDetail_MenuItem
+FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID);
+GO
+
+ALTER TABLE MenuItem ADD CONSTRAINT FK_MenuItem_Drink
+FOREIGN KEY (DrinkMenu) REFERENCES MenuItem(MenuItemID);
+GO
+
+ALTER TABLE MenuItem ADD CONSTRAINT FK_MenuItem_Food
+FOREIGN KEY (FoodMenu) REFERENCES FoodMenu(FoodID);
+GO
+
+ALTER TABLE MenuItem ADD CONSTRAINT FK_MenuItem_Seasonal
+FOREIGN KEY (SeasonalID) REFERENCES SeasonalMenu(SeasonalID);
+GO
+
+ALTER TABLE MenuItem ADD CONSTRAINT FK_MenuItem_Store
+FOREIGN KEY (SeasonalID) REFERENCES SeasonalMenu(SeasonalID);
+GO
+
+ALTER TABLE SeasonalMenu ADD CONSTRAINT FK_SeasonalMenu_MenuItem
+FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID)
+GO
+
+ALTER TABLE DrinkMenu ADD CONSTRAINT FK_DrinkMenu_Seasonal
+FOREIGN KEY (SeasonalID) REFERENCES DrinkMenu(SeasonalID);
+GO
+
+ALTER TABLE FoodMenu ADD CONSTRAINT FK_FoodMenu_Seasonal
+FOREIGN KEY (SeasonalID) REFERENCES FoodMenu(SeasonalID);
+GO
 
 INSERT INTO Store(StoreID, Name, Type, Country, Region, City, ZipCode, Address, Phone, YearEstablished) VALUES
 (10001, 'Atlantic Ave', 'DriveThru', 'U.S.', 'Southeast', 'Delray Beach', 33444, '200 Atlantic Ave', 561-222-3245, 2009),
@@ -177,6 +214,19 @@ INSERT INTO CreditCard(CreditCardID, Provider, ExpirationDate,LastFour) VALUES
 (7009, 'Visa', '03/23', 9483),
 (7010, 'Mastercard', '04/20', 7437);
 
+INSERT INTO Customer(CustomerID, FirstName, LastName, Email, Address, ZipCode, CreditCardID) VALUES
+(1001, 'Jane', 'Harrington', 'bella321@aol.com', '949 Wellington Road', 33434, 255),
+(1002, 'Max', 'Bourne', 'maxbourne@gmail.com', '330 Atlantic Ave', 33455, 261),
+(1003, 'Marybelle', 'Williams', 'marybelle@williams.com', '5 Wilson Dr', 33435, 253),
+(1004, 'Jay', 'Mobilia', 'jmobilia561@gmail.com', '35 Duncan Dr', 33434, NULL),
+(1005, 'Gina', 'OConnell', 'goconnell@tmt.com', '210 Broken Sound Dr', 33430, 251),
+(1006, 'Gino', 'Ginopoulos', 'ginogino@gmail.com', '13 Mulholland Dr', 33434, 252),
+(1007, 'Andrew', 'Andrewson', 'aandrews@gmail.com', '213 Atlantic Ave', 33444, 254),
+(1008, 'Michelle', 'Vozzella', 'mvozz@gmail.com', '40 Arrieta Dr', 33434, 259),
+(1009, 'Sophie', 'Cluie', 'sophiecluie@tmt.com', '53 Duncan Dr', 33434, 260),
+(1010, 'Isabel', 'Santos', 'isantos@futuretechnologies.com', '93 Kellerman Rd', 33434, 256),
+(1011, 'Joseph', 'Adande', 'jayadande@gmail.com', '31 Durant Dr', 33434, 258);
+
 INSERT INTO OrderHeader(OrderID, SubTotal, TaxAmt, TotalDue, PaymentType, EmployeeID, StoreID, CreditCardID) VALUES
 (100001, 11.14, 0.67, 11.81, Cash, 5001, 10001, NULL),
 (100002, 2.29, 0.14, 2.43, Cash, 5001, 10001, NULL),
@@ -207,6 +257,91 @@ INSERT INTO OrderHeader(OrderID, SubTotal, TaxAmt, TotalDue, PaymentType, Employ
 (100027, 2.29, 0.14, 2.43, Credit, 5025, 10010, 9483),
 (100028, 4.00, 0.24, 4.24, Credit, 5025, 10010, 8537),
 (100029, 2.07, 0.12, 2.19, Cash, 5026, 10010, NULL);
+
+INSERT INTO SeasonalMenu(SeasonalID, Season, MenuID) VALUES
+(2111,'Fall', 210),
+(2112,'Summer', 211),
+(2113,'Summer',212),
+(2114,'Fall',213),
+(2115,'Fall', 214),
+(1112,'Spring',112),
+(1113,'Summer', 113),
+(1114,'Summer', 114),
+(1115,'Fall', 115),
+(1116,'Winter', 116);
+
+INSERT INTO DrinkMenu(DrinkID, DrinkName, DrinkCalories, DrinkCategory, IsSeasonal, SeasonalCode,SeasonalID, IsMadeInStore, SmallPrice, MediumPrice, LargePrice, VendorPrice) VALUES
+(1001, 'Cappuchino', 300, 'hot', 0, NULL, NULL,1, 1.49, 2.07,2.79,0),
+(1002, 'Dunkaccino', 350, 'hot', 0, NULL, NULL,1,1.49, 2.07,2.79,0),
+(1003, 'Hot Chocolate', 200, 'hot', 0,NULL, NULL,1,1.49, 2.07,2.79,0),
+(1004, 'Hot Coffee', 50, 'hot', 0,NULL, NULL, 1,1.49, 2.07,2.79,0),
+(1005, 'Hot Tea', 30, 'hot', 0, NULL, NULL,1,1.49, 2.07,2.79,0),
+(1006, 'Latte', 450, 'hot', 0,NULL, NULL,1,1.49, 2.07,2.79,0),
+(1007, 'Iced Macchiato', 250, 'cold', 0, NULL, NULL, 1,1.69,2.29,2.79,0),
+(1008, 'Iced Latte', 300, 'cold', 0,NULL, NULL,1,1.69,2.29,2.79,0),
+(1009, 'Sweet Tea', 40, 'cold', 0, NULL,NULL,1,1.69,2.29,2.79,0),
+(1010, 'Iced Tea', 25, 'cold', 0, NULL,NULL,1,1.69,2.29,2.79,0),
+(1011, 'water', 0, 'cold', 0, NULL, NULL,0,NULL,NULL,NULL,1.50),
+(1012, 'Smoothie',200,'cold', 1,2, 1112,1,2.00,3.00,3.50,0),
+(1013, 'Mango Coffee', 100, 'hot',1,3,1113,1,2.00,3.00,3.50,0),
+(1014, 'Chocolate Chip Coffee',50,'hot',1,3,1114,1,2.00,3.00,3.50,0),
+(1015, 'Cider Tea', 30, 'cold',1,4,1115,1,1.50,2.00,3.00,0),
+(1016, 'Snowflake Latte' 200, 'hot', 1,1,1116,1,2.00,3.00,3.50,0);
+
+
+
+
+INSERT INTO FoodMenu(FoodID, FoodName, FoodCalories, FoodCategory,IsSeasonal,SeasonalCode, SeasonalID,IsMadeInStore, UnitPrice, HasQualityPriceReduction, HalfDozenPrice, DozenPrice) VALUES
+(2001, 'Plain Bagel', 200, 'Bakery', 0,NULL,NULL, 1,1.20,1, 6.00,12.00),
+(2002, 'Blueberry Muffin', 550, 'Bakery', 0,NULL,NULL,1,1.20,1,6.00,12.00),
+(2003, 'Chocolate Donut', 300, 'Bakery',0,NULL,NULL,1, 1.20,1,6.00,12.00),
+(2004, 'Cookie', 90, 'Bakery',0,NULL,NULL,1, 0.59,0,NULL,NULL),
+(2005, 'Munchkin', 70, 'Bakery',0, NULL,NULL,1, 0.75,1, 4.00, 7.00),
+(2006, 'Bacon Egg and Cheese', 450,'Breakfast Sandwich',0,NULL,NULL,1,2.50,0,NULL,NULL),
+(2007, 'Egg White Flatbread', 200, 'Breakfast Sandwich',0,NULL,NULL,1,3.50,0,NULL,NULL),
+(2008, 'Turkey Sausage Flatbread', 350, 'Breakdast Sandwich',0,NULL,NULL,1,3.30,0,NULL,NULL),
+(2009, 'Ham and Chedder', 240, 'Bakery Sandwich',0,NULL,NULL,1,4.50,0,NULL,NULL),
+(2010, 'Danish', 400, 'Bakery',0,NULL,NULL,1, 1.23,1,6.00,12.00),
+(2011, 'Pumpkin Donut', 200, 'Bakery',1, 4,2111,1,2.20,1,6.00,12.00),
+(2012, 'Oreo Donut',300, 'Bakery',1,3,2112,1,1.50, 1,6.00,12.00),
+(2013, 'Health Bar Donut', 250,'Bakery',1,3,2113,1,1.50,1,6.00,12.00),
+(2014, 'Pumpkin Munchkin',70,'Bakery',1,4,2114,1,0.25,1, 2.00, 4.00),
+(2015, 'Cider Donuts', 300,'Bakery',1,4,2115,1,1.50,1,6.00,12.00);
+
+
+INSERT INTO MenuItem(MenuItemID, IsDrink, DrinkID, FoodID,IsSeasonal,SeasonalID) VALUES
+(101, 1, 1001,NULL, 0,NULL),
+(102, 1, 1002,NULL, 0, NULL),
+(103, 1, 1003,NULL, 0, NULL),
+(104, 1, 1004, NULL, 0, NULL),
+(105, 1, 1005, NULL, 0, NULL),
+(106, 1, 1006, NULL, 0, NULL),
+(107, 1, 1007, NULL, 0, NULL),
+(108, 1, 1008, NULL, 0, NULL),
+(109, 1, 1009, NULL, 0, NULL),
+(110, 1, 1010, NULL, 0, NULL),
+(111, 1, 1011, NULL, 0, NULL),
+(112, 1, 1012, NULL, 1, 1112),
+(113, 1, 1013, NULL, 1, 1113),
+(114, 1, 1014, NULL, 1, 1114),
+(115, 1, 1015, NULL, 1, 1115),
+(116, 1, 1016, NULL, 1, 1116),
+(201, 0, NULL,2001,0, NULL),
+(202, 0, NULL,2002,0, NULL),
+(203, 0, NULL,2003,0, NULL),
+(204, 0, NULL,2004,0, NULL),
+(205, 0, NULL,2005,0, NULL),
+(206, 0, NULL,2006,0, NULL),
+(207, 0, NULL,2007,0, NULL),
+(208, 0, NULL,2008,0,NULL),
+(209, 0, NULL ,2009,0,NULL),
+(210, 0, NULL,2010,1,2110),
+(211, 0, NULL,2011,1,2111),
+(212, 0, NULL, 2012,1,2112),
+(213, 0, NULL,2013,1,2113),
+(214, 0, NULL,2014,1, 2114),
+(215, 0, NULL,2015,1, 2115);
+
 
 INSERT INTO OrderDetail(OrderID, OrderDetailID, Date, MenuItemID, Quantity, LineTotal) VALUES
 (100001, 200001, 1006, 2, 4.14),
@@ -252,92 +387,4 @@ INSERT INTO OrderDetail(OrderID, OrderDetailID, Date, MenuItemID, Quantity, Line
 (100027, 200041, 1007, 1, 2.29),
 (100028, 200042, 2005, 6, 4.00),
 (100029, 200043, 1004, 1, 2.07);
-
-
-INSERT INTO MenuItem(MenuItemID, IsDrink, DrinkID, FoodID,IsSeasonal,SeasonalID) VALUES
-(101, 1, 1001,NULL, 0,NULL),
-(102, 1, 1002,NULL, 0, NULL),
-(103, 1, 1003,NULL, 0, NULL),
-(104, 1, 1004, NULL, 0, NULL),
-(105, 1, 1005, NULL, 0, NULL),
-(106, 1, 1006, NULL, 0, NULL),
-(107, 1, 1007, NULL, 0, NULL),
-(108, 1, 1008, NULL, 0, NULL),
-(109, 1, 1009, NULL, 0, NULL),
-(110, 1, 1010, NULL, 0, NULL),
-(111, 1, 1011, NULL, 0, NULL),
-(112, 1, 1012, NULL, 1, 1112),
-(113, 1, 1013, NULL, 1, 1113),
-(114, 1, 1014, NULL, 1, 1114),
-(115, 1, 1015, NULL, 1, 1115),
-(116, 1, 1016, NULL, 1, 1116),
-(201, 0, NULL,2001,0, NULL),
-(202, 0, NULL,2002,0, NULL),
-(203, 0, NULL,2003,0, NULL),
-(204, 0, NULL,2004,0, NULL),
-(205, 0, NULL,2005,0, NULL),
-(206, 0, NULL,2006,0, NULL),
-(207, 0, NULL,2007,0, NULL),
-(208, 0, NULL,2008,0,NULL),
-(209, 0, NULL ,2009,0,NULL),
-(210, 0, NULL,2010,1,2110),
-(211, 0, NULL,2011,1,2111),
-(212, 0, NULL, 2012,1,2112),
-(213, 0, NULL,2013,1,2113),
-(214, 0, NULL,2014,1, 2114),
-(215, 0, NULL,2015,1, 2115);
-
-
-INSERT INTO DrinkMenu(DrinkID, DrinkName, DrinkCalories, DrinkCategory, IsSeasonal, SeasonalCode,SeasonalID, IsMadeInStore, SmallPrice, MediumPrice, LargePrice, VendorPrice) VALUES
-(1001, 'Cappuchino', 300, 'hot', 0, NULL, NULL,1, 1.49, 2.07,2.79,0),
-(1002, 'Dunkaccino', 350, 'hot', 0, NULL, NULL,1,1.49, 2.07,2.79,0),
-(1003, 'Hot Chocolate', 200, 'hot', 0,NULL, NULL,1,1.49, 2.07,2.79,0),
-(1004, 'Hot Coffee', 50, 'hot', 0,NULL, NULL, 1,1.49, 2.07,2.79,0),
-(1005, 'Hot Tea', 30, 'hot', 0, NULL, NULL,1,1.49, 2.07,2.79,0),
-(1006, 'Latte', 450, 'hot', 0,NULL, NULL,1,1.49, 2.07,2.79,0),
-(1007, 'Iced Macchiato', 250, 'cold', 0, NULL, NULL, 1,1.69,2.29,2.79,0),
-(1008, 'Iced Latte', 300, 'cold', 0,NULL, NULL,1,1.69,2.29,2.79,0),
-(1009, 'Sweet Tea', 40, 'cold', 0, NULL,NULL,1,1.69,2.29,2.79,0),
-(1010, 'Iced Tea', 25, 'cold', 0, NULL,NULL,1,1.69,2.29,2.79,0),
-(1011, 'water', 0, 'cold', 0, NULL, NULL,0,NULL,NULL,NULL,1.50),
-(1012, 'Smoothie',200,'cold', 1,2, 1112,1,2.00,3.00,3.50,0),
-(1013, 'Mango Coffee', 100, 'hot',1,3,1113,1,2.00,3.00,3.50,0),
-(1014, 'Chocolate Chip Coffee',50,'hot',1,3,1114,1,2.00,3.00,3.50,0),
-(1015, 'Cider Tea', 30, 'cold',1,4,1115,1,1.50,2.00,3.00,0),
-(1016, 'Snowflake Latte' 200, 'hot', 1,1,1116,1,2.00,3.00,3.50,0);
-
-
-
-
-INSERT INTO FoodMenu(FoodID, FoodName, FoodCalories, FoodCategory,IsSeasonal,SeasonalCode, SeasonalID,IsMadeInStore, UnitPrice, HasQualityPriceReduction, HalfDozenPrice, DozenPrice) VALUES
-(2001, 'Plain Bagel', 200, 'Bakery', 0,NULL,NULL, 1,1.20,1, 6.00,12.00),
-(2002, 'Blueberry Muffin', 550, 'Bakery', 0,NULL,NULL,1,1.20,1,6.00,12.00),
-(2003, 'Chocolate Donut', 300, 'Bakery',0,NULL,NULL,1, 1.20,1,6.00,12.00),
-(2004, 'Cookie', 90, 'Bakery',0,NULL,NULL,1, 0.59,0,NULL,NULL),
-(2005, 'Munchkin', 70, 'Bakery',0, NULL,NULL,1, 0.75,1, 4.00, 7.00),
-(2006, 'Bacon Egg and Cheese', 450,'Breakfast Sandwich',0,NULL,NULL,1,2.50,0,NULL,NULL),
-(2007, 'Egg White Flatbread', 200, 'Breakfast Sandwich',0,NULL,NULL,1,3.50,0,NULL,NULL),
-(2008, 'Turkey Sausage Flatbread', 350, 'Breakdast Sandwich',0,NULL,NULL,1,3.30,0,NULL,NULL),
-(2009, 'Ham and Chedder', 240, 'Bakery Sandwich',0,NULL,NULL,1,4.50,0,NULL,NULL),
-(2010, 'Danish', 400, 'Bakery',0,NULL,NULL,1, 1.23,1,6.00,12.00),
-(2011, 'Pumpkin Donut', 200, 'Bakery',1, 4,2111,1,2.20,1,6.00,12.00),
-(2012, 'Oreo Donut',300, 'Bakery',1,3,2112,1,1.50, 1,6.00,12.00),
-(2013, 'Health Bar Donut', 250,'Bakery',1,3,2113,1,1.50,1,6.00,12.00),
-(2014, 'Pumpkin Munchkin',70,'Bakery',1,4,2114,1,0.25,1, 2.00, 4.00),
-(2015, 'Cider Donuts', 300,'Bakery',1,4,2115,1,1.50,1,6.00,12.00);
-
-
-
-
-INSERT INTO SeasonalMenu(SeasonalID, Season, MenuID) VALUES
-(2111,'Fall', 210),
-(2112,'Summer', 211),
-(2113,'Summer',212),
-(2114,'Fall',213),
-(2115,'Fall', 214),
-(1112,'Spring',112),
-(1113,'Summer', 113),
-(1114,'Summer', 114),
-(1115,'Fall', 115),
-(1116,'Winter', 116);
 
